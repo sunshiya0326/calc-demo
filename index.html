@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>治疗费用测算器 · 交互体验版 (Demo)</title>
+<style>
+  :root{
+    --navy:#003B71; --blue:#0093D0; --cyan:#00B5E2; --bg:#EAF4FB; --panel:#fff;
+    --ink:#1A2B4C; --muted:#5B7A93; --line:#D6EAF5; --teal:#00E0C8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{font-family:"Microsoft YaHei","Segoe UI",sans-serif;background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);color:var(--ink);min-height:100vh;padding:0}
+  .wrap{max-width:480px;margin:0 auto;padding:18px 16px 40px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:8px}
+  .logo-dot{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--navy),var(--blue))}
+  h1{font-size:17px;font-weight:700;color:var(--navy);line-height:1.2}
+  .sub{font-size:11px;color:var(--muted)}
+  .demo-chip{font-size:10px;color:#007FAD;font-weight:700;background:rgba(0,181,226,.12);border:1px solid #BFE9F5;border-radius:6px;padding:3px 8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 22px rgba(0,59,113,.08);padding:16px;margin-bottom:12px}
+  .steps{display:flex;align-items:center;gap:4px;margin-bottom:14px;font-size:11px}
+  .step{display:flex;align-items:center;gap:5px;color:var(--muted)}
+  .step.on{color:var(--navy);font-weight:700}
+  .step .n{width:17px;height:17px;border-radius:9px;background:var(--blue);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .step.off .n{background:#C5D8E6}
+  .arr{color:var(--cyan)}
+  .sec-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .sec-title i{width:4px;height:14px;background:linear-gradient(180deg,var(--navy),var(--blue));border-radius:2px;display:inline-block}
+  .row{display:flex;gap:10px;margin-bottom:10px}
+  .field{flex:1}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+  .field select,.field input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--ink);background:#fff;outline:none}
+  .field select:focus,.field input:focus{border-color:var(--blue)}
+  .btn{width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--navy),var(--blue));color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,147,208,.3)}
+  .btn:active{transform:translateY(1px)}
+  #result{display:none}
+  .kpis{display:flex;gap:8px;margin-bottom:12px}
+  .kpi{flex:1;background:linear-gradient(160deg,#F4FAFE,#EAF4FB);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .kpi.hi{background:var(--navy);border:none}
+  .kpi .l{font-size:10px;color:var(--muted)}
+  .kpi.hi .l{color:#BFE3F2}
+  .kpi .v{font-size:18px;font-weight:800;color:var(--blue);margin-top:3px}
+  .kpi.hi .v{color:var(--cyan)}
+  .chart-box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+  .chart-title{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:8px}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  svg{width:100%;height:auto;display:block}
+  .insight{margin-top:10px;background:linear-gradient(90deg,rgba(0,59,113,.94),rgba(0,147,208,.94));color:#fff;border-radius:8px;padding:9px 12px;font-size:11px;line-height:1.5}
+  .insight b{color:var(--teal)}
+  .foot{font-size:10px;color:var(--muted);text-align:center;line-height:1.6;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo-dot"></div>
+      <div><h1>治疗费用测算器</h1><div class="sub">交互体验版 · 流程示意</div></div>
+    </div>
+    <div class="demo-chip">Demo</div>
+  </header>
+
+  <div class="steps">
+    <div class="step on"><span class="n">1</span>参数录入</div>
+    <span class="arr">›</span>
+    <div class="step off"><span class="n">2</span>患者结构</div>
+    <span class="arr">›</span>
+    <div class="step off"><span class="n">3</span>测算结果</div>
+  </div>
+
+  <div class="card">
+    <div class="sec-title"><i></i>参数便捷录入</div>
+    <div class="row">
+      <div class="field"><label>省市</label>
+        <select id="prov"><option>北京</option><option>上海</option><option>广州</option><option>杭州</option><option>郑州</option></select>
+      </div>
+      <div class="field"><label>医保类型</label>
+        <select id="ins"><option>职工医保</option><option>居民医保</option></select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label>A 型患者数</label><input id="pa" type="number" value="2" min="0"/></div>
+      <div class="field"><label>B 型患者数</label><input id="pb" type="number" value="3" min="0"/></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>单价（元/支）</label><input id="price" type="number" value="5000"/></div>
+      <div class="field"><label>维持剂量（支/周）</label><input id="dose" type="number" value="1"/></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>治疗周数/年</label><input id="weeks" type="number" value="52"/></div>
+      <div class="field"><label>医保报销比例</label>
+        <select id="rate"><option value="0.7">70%</option><option value="0.8">80%</option><option value="0.85">85%</option><option value="0.9">90%</option></select>
+      </div>
+    </div>
+    <button class="btn" onclick="compute()">一键生成测算结果</button>
+  </div>
+
+  <div id="result">
+    <div class="card">
+      <div class="sec-title"><i></i>结果对比可视化</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">当前方案·人均/年</div><div class="v" id="k1">—</div></div>
+        <div class="kpi hi"><div class="l">新方案·人均/年</div><div class="v" id="k2">—</div></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">院内总治疗费用 / 医保基金支付 / 患者支付 · 单位：万元（全部患者/年）</div>
+        <div class="legend">
+          <span><i style="background:#8FA8BC"></i>当前方案（因子）</span>
+          <span><i style="background:linear-gradient(180deg,#0093D0,#00B5E2)"></i>新方案（非因子）</span>
+        </div>
+        <svg id="chart" viewBox="0 0 420 200" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="insight" id="insight"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    本页为流程示意（Demo），非真实测算工具；所有参数与结果均为示例，仅供参考。<br/>
+    真实工具以当地医保政策与实际数据为准。
+  </div>
+</div>
+
+<script>
+function fmt(v){return (v/10000).toFixed(1)}
+function compute(){
+  var pa=+document.getElementById('pa').value||0;
+  var pb=+document.getElementById('pb').value||0;
+  var n=pa+pb; if(n==0){alert('请输入患者数');return}
+  var price=+document.getElementById('price').value||0;
+  var dose=+document.getElementById('dose').value||0;
+  var weeks=+document.getElementById('weeks').value||0;
+  var rate=+document.getElementById('rate').value;
+  // 新方案（非因子）：示例负荷剂量 2 支
+  var perNew=price*(2+dose*weeks);
+  var totalNew=perNew*n;
+  var medicareNew=totalNew*rate;
+  var patientNew=totalNew-medicareNew;
+  // 当前方案（因子）：示例固定值
+  var perOld=200000;
+  var totalOld=perOld*n;
+  var medicareOld=totalOld*0.70;
+  var patientOld=totalOld-medicareOld;
+
+  document.getElementById('k1').textContent=fmt(perOld)+' 万';
+  document.getElementById('k2').textContent=fmt(perNew)+' 万';
+
+  var groups=[
+    {label:'院内总治疗费用',a:totalOld,b:totalNew},
+    {label:'医保基金支付',a:medicareOld,b:medicareNew},
+    {label:'患者支付',a:patientOld,b:patientNew}
+  ];
+  var max=Math.max(totalOld,totalNew,medicareOld,medicareNew,patientOld,patientNew)*1.15;
+  var W=420,H=200,padL=40,padR=14,padT=16,padB=34;
+  var gw=W-padL-padR, gh=H-padT-padB;
+  var step=gw/groups.length;
+  var bw=step*0.28;
+  var svg='';
+  // grid
+  for(var g=0;g<5;g++){
+    var y=padT+gh*g/4;
+    svg+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#EAF4FB" stroke-width="1"/>';
+    var val=(max*(1-g/4)/10000).toFixed(0);
+    svg+='<text x="'+(padL-6)+'" y="'+(y+3)+'" font-size="9" fill="#9DB8CC" text-anchor="end">'+val+'</text>';
+  }
+  groups.forEach(function(gp,i){
+    var cx=padL+step*i+step/2;
+    var ha=gp.a/max*gh, hb=gp.b/max*gh;
+    svg+='<rect x="'+(cx-bw-2)+'" y="'+(padT+gh-ha)+'" width="'+bw+'" height="'+ha+'" rx="3" fill="#8FA8BC"/>';
+    svg+='<rect x="'+(cx+2)+'" y="'+(padT+gh-hb)+'" width="'+bw+'" height="'+hb+'" rx="3" fill="url(#g)"/>';
+    svg+='<text x="'+(cx-bw-2+bw/2)+'" y="'+(padT+gh-ha-3)+'" font-size="8" fill="#5B7A93" text-anchor="middle">'+fmt(gp.a)+'</text>';
+    svg+='<text x="'+(cx+2+bw/2)+'" y="'+(padT+gh-hb-3)+'" font-size="8" fill="#007FAD" text-anchor="middle" font-weight="700">'+fmt(gp.b)+'</text>';
+    svg+='<text x="'+cx+'" y="'+(H-padB+14)+'" font-size="10" fill="#1A2B4C" text-anchor="middle">'+gp.label+'</text>';
+  });
+  svg='<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0093D0"/><stop offset="1" stop-color="#00B5E2"/></linearGradient></defs>'+svg;
+  document.getElementById('chart').innerHTML=svg;
+
+  var dMed=((medicareNew-medicareOld)/medicareOld*100).toFixed(1);
+  var dPat=((patientNew-patientOld)/patientOld*100).toFixed(1);
+  var sign=dPat<0?'↓':'↑';
+  document.getElementById('insight').innerHTML='同口径对比：新方案医保基金支付 <b>'+'+'+dMed+'%</b>，患者年支付 <b>'+sign+Math.abs(dPat)+'%</b> —— 医保覆盖与患者获益对比一目了然。';
+
+  var ss=document.querySelectorAll('.step');
+  ss[1].className='step on';ss[2].className='step on';
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
