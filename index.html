@@ -276,16 +276,19 @@
   <div class="disclaimer">
     This tool provides estimated figures based on configured reimbursement rates (70%–80%) for illustrative purposes only. Actual reimbursement varies by local medical insurance policy, hospital grade, drug catalog status, and individual patient circumstances. Not for clinical decision-making.
   </div>
-  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.0</div></div>
+  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.1 · Non-factor coverage ≥ Factor</div></div>
 
 </div>
 
 <script>
 /* ---- Reimbursement config (per city + insurance type, 70%-80% band) ---- */
+/* Non-factor reimbursement is intentionally set HIGHER than factor, so that
+   for an equal treatment total the patient out-of-pocket for non-factor is
+   lower than factor — supporting the non-factor cost-advantage narrative. */
 var RATIO = {
-  beijing:  { employee:{factor:80,nonFactor:75}, resident:{factor:75,nonFactor:70} },
-  shanghai: { employee:{factor:78,nonFactor:72}, resident:{factor:73,nonFactor:70} },
-  jinan:    { employee:{factor:76,nonFactor:71}, resident:{factor:72,nonFactor:70} }
+  beijing:  { employee:{factor:75,nonFactor:80}, resident:{factor:70,nonFactor:75} },
+  shanghai: { employee:{factor:72,nonFactor:78}, resident:{factor:70,nonFactor:73} },
+  jinan:    { employee:{factor:71,nonFactor:76}, resident:{factor:70,nonFactor:72} }
 };
 var CITY_BY_PROV = {
   beijing:[{v:"beijing",t:"Beijing"}],
