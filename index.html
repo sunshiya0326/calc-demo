@@ -90,8 +90,13 @@
   .breakdown{width:100%;border-collapse:collapse;font-size:13px}
   .breakdown th,.breakdown td{padding:11px 8px;text-align:right;border-bottom:1px solid var(--border)}
   .breakdown th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .breakdown th.hf{color:var(--factor)}
+  .breakdown th.hn{color:var(--nonfactor)}
   .breakdown th:first-child,.breakdown td:first-child{text-align:left}
   .breakdown tr.total td{font-weight:800;color:var(--pfizer-deep);border-top:2px solid var(--pfizer-blue);border-bottom:none;background:#f5faff}
+  .breakdown tr.patient td{font-weight:700}
+  .breakdown tr.patient td:last-child{color:var(--nonfactor)}
+  .breakdown td.savings{font-size:11px;color:var(--nonfactor);font-weight:600}
   .breakdown td .pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:8px;color:#fff;font-weight:600}
   .pill.f{background:var(--factor)}
   .pill.n{background:var(--nonfactor)}
@@ -200,8 +205,8 @@
     <!-- SCREEN 2 -->
     <div class="screen" id="s2">
       <div class="card">
-        <h2><span class="ic">2</span>Patient &amp; Annual Cost Input</h2>
-        <div class="hint" style="margin-bottom:14px">Enter the hospital-wide patient counts and per-patient annual treatment costs.</div>
+        <h2><span class="ic">2</span>Patient Input</h2>
+        <div class="hint" style="margin-bottom:14px">Enter the hospital-wide patient counts. Annual treatment costs are auto-configured below.</div>
 
         <div class="field">
           <label>Hemophilia A — Number of Patients</label>
@@ -213,15 +218,14 @@
           <input type="number" id="hemB" min="0" step="1" placeholder="e.g. 12">
           <div class="err">Please enter a valid number (≥ 0).</div>
         </div>
-        <div class="field">
-          <label>Annual Factor Treatment Cost (¥ / patient)</label>
-          <input type="number" id="costFactor" min="0" step="1000" placeholder="e.g. 320000">
-          <div class="err">Please enter a valid amount (≥ 0).</div>
-        </div>
-        <div class="field">
-          <label>Annual Non-Factor Treatment Cost (¥ / patient)</label>
-          <input type="number" id="costNonFactor" min="0" step="1000" placeholder="e.g. 180000">
-          <div class="err">Please enter a valid amount (≥ 0).</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="ic" style="background:var(--nonfactor)">i</span>Auto-Configured Annual Treatment Costs</h2>
+        <div class="hint" style="margin-bottom:12px">Pre-set per-patient annual treatment costs applied in the calculation.</div>
+        <div class="ratio-row">
+          <div class="ratio-box"><div class="lab">Factor (per patient / year)</div><div class="val">¥450,000</div></div>
+          <div class="ratio-box nf"><div class="lab">Non-Factor (per patient / year)</div><div class="val">¥150,000</div></div>
         </div>
       </div>
 
@@ -258,7 +262,7 @@
         <h2><span class="ic" style="background:var(--pfizer-dark)">=</span>Cost Breakdown (3 Tiers)</h2>
         <table class="breakdown">
           <thead>
-            <tr><th>Category</th><th>Total Cost</th><th>Insurance Pays</th><th>Patient Pays</th></tr>
+            <tr><th>Cost Breakdown</th><th class="hf">Factor</th><th class="hn">Non-Factor</th></tr>
           </thead>
           <tbody id="bdBody"></tbody>
         </table>
@@ -274,9 +278,9 @@
   </div>
 
   <div class="disclaimer">
-    This tool provides estimated figures based on configured reimbursement rates (70%–80%) for illustrative purposes only. Actual reimbursement varies by local medical insurance policy, hospital grade, drug catalog status, and individual patient circumstances. Not for clinical decision-making.
+    This tool provides estimated figures for illustrative purposes only. Annual treatment costs are pre-set at ¥450,000/patient (factor) and ¥150,000/patient (non-factor); reimbursement rates are configured in the 70%–80% band with non-factor coverage set higher than factor. Actual costs and reimbursement vary by local medical insurance policy, hospital grade, drug catalog status, and individual patient circumstances. Not for clinical decision-making.
   </div>
-  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.1 · Non-factor coverage ≥ Factor</div></div>
+  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.2 · Auto-cost + transposed breakdown</div></div>
 
 </div>
 
@@ -297,6 +301,10 @@ var CITY_BY_PROV = {
 };
 
 var state={province:"",city:"",grade:"",insure:"",factorRate:0,nonFactorRate:0};
+
+/* ---- Auto-configured annual treatment costs (¥/patient/year) ---- */
+var FACTOR_COST_PER_PATIENT = 450000;       // factor therapy
+var NON_FACTOR_COST_PER_PATIENT = 150000;   // non-factor therapy
 
 /* ---- helpers ---- */
 function $(id){return document.getElementById(id)}
@@ -363,13 +371,13 @@ $("go2").addEventListener("click",function(){
 $("back1").addEventListener("click",function(){show(1);});
 
 $("go3").addEventListener("click",function(){
-  var ok=["hemA","hemB","costFactor","costNonFactor"].every(validNum);
+  var ok=["hemA","hemB"].every(validNum);
   if(!ok)return;
   compute();show(3);
 });
 $("back2").addEventListener("click",function(){show(2);});
 $("restart").addEventListener("click",function(){
-  ["province","city","grade","insure","hemA","hemB","costFactor","costNonFactor"].forEach(function(id){
+  ["province","city","grade","insure","hemA","hemB"].forEach(function(id){
     var el=$(id);if(el)el.value="";
   });
   state={province:"",city:"",grade:"",insure:"",factorRate:0,nonFactorRate:0};
@@ -380,8 +388,8 @@ $("restart").addEventListener("click",function(){
 function compute(){
   var hemA=parseInt($("hemA").value)||0;
   var hemB=parseInt($("hemB").value)||0;
-  var cf=parseFloat($("costFactor").value)||0;
-  var cn=parseFloat($("costNonFactor").value)||0;
+  var cf=FACTOR_COST_PER_PATIENT;       // auto-configured factor cost/patient/yr
+  var cn=NON_FACTOR_COST_PER_PATIENT;   // auto-configured non-factor cost/patient/yr
   var total=hemA+hemB;
   var tf=total*cf;          // total factor cost
   var tn=total*cn;          // total non-factor cost
@@ -390,11 +398,12 @@ function compute(){
   var nIns=tn*state.nonFactorRate/100;
   var nPat=tn-nIns;
   var gAll=tf+tn, gIns=fIns+nIns, gPat=fPat+nPat;
+  var save=fPat-nPat;       // patient out-of-pocket savings with non-factor
 
   $("rTotalFactor").textContent=fmt(tf);
   $("rTotalNonFactor").textContent=fmt(tn);
-  $("rSubFactor").textContent=total+" patients · "+state.factorRate+"% covered";
-  $("rSubNonFactor").textContent=total+" patients · "+state.nonFactorRate+"% covered";
+  $("rSubFactor").textContent=total+" patients · ¥450,000/patient/yr · "+state.factorRate+"% covered";
+  $("rSubNonFactor").textContent=total+" patients · ¥150,000/patient/yr · "+state.nonFactorRate+"% covered";
 
   var sum=tf+tn||1, pf=tf/sum*100, pn=tn/sum*100;
   $("barF").style.width=Math.max(pf,2)+"%";
@@ -402,21 +411,24 @@ function compute(){
   $("lpF").textContent=pf.toFixed(0)+"%";
   $("lpN").textContent=pn.toFixed(0)+"%";
 
+  /* Transposed breakdown: rows = Total/Insurance/Patient, cols = Factor/Non-Factor */
   var rows=[
-    {tag:"f",name:"Factor Therapy",tot:tf,ins:fIns,pat:fPat},
-    {tag:"n",name:"Non-Factor Therapy",tot:tn,ins:nIns,pat:nPat}
+    {name:"Total Treatment Cost",f:tf,n:tn},
+    {name:"Insurance Payment",f:fIns,n:nIns},
+    {name:"Patient Out-of-pocket",f:fPat,n:nPat,patient:true}
   ];
   var html=rows.map(function(r){
-    return '<tr><td><span class="pill '+(r.tag==="f"?"f":"n")+'">'+r.tag.toUpperCase()+'</span> '+r.name+'</td>'+
-      '<td>'+fmt(r.tot)+'</td><td>'+fmt(r.ins)+'</td><td>'+fmt(r.pat)+'</td></tr>';
-  }).join("")+
-    '<tr class="total"><td>Grand Total</td><td>'+fmt(gAll)+'</td><td>'+fmt(gIns)+'</td><td>'+fmt(gPat)+'</td></tr>';
+    return '<tr'+(r.patient?' class="patient"':'')+'><td>'+r.name+'</td>'+
+      '<td>'+fmt(r.f)+'</td><td>'+fmt(r.n)+'</td></tr>';
+  }).join("");
   $("bdBody").innerHTML=html;
 
   $("summary").innerHTML=
-    "Hospital-wide: <b>"+total+"</b> hemophilia patients ("+hemA+" A + "+hemB+" B) · "+
-    "Coverage: "+state.factorRate+"% factor / "+state.nonFactorRate+"% non-factor · "+
-    "Patient out-of-pocket share: <b>"+(gAll?(gPat/gAll*100).toFixed(0):0)+"%</b>";
+    "Hospital-wide: <b>"+total+"</b> patients ("+hemA+" A + "+hemB+" B) &middot; "+
+    "Per-patient/yr: Factor ¥450,000 / Non-Factor ¥150,000 &middot; "+
+    "Coverage: "+state.factorRate+"% / "+state.nonFactorRate+"% &middot; "+
+    "Patient out-of-pocket share: <b>"+(gAll?(gPat/gAll*100).toFixed(0):0)+"%</b> &middot; "+
+    "Non-factor saves patient <b>"+fmt(Math.max(save,0))+"</b> vs factor";
 }
 </script>
 </body>
