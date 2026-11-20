@@ -128,7 +128,7 @@
       <span class="tag">HCP Tool</span>
     </div>
     <h1>Hemophilia Treatment Cost &amp; Insurance Coverage Calculator</h1>
-    <p>Estimate hospital-wide factor vs. non-factor costs and reimbursement split</p>
+    <p>Estimate hospital-wide factor vs. Hympavzi costs and reimbursement split</p>
   </div>
 
   <div class="progress">
@@ -191,7 +191,7 @@
             <div class="val" id="vFactor">— —</div>
           </div>
           <div class="ratio-box nf placeholder" id="rbNonFactor">
-            <div class="lab">Non-Factor Reimbursement Rate</div>
+            <div class="lab">Hympavzi Reimbursement Rate</div>
             <div class="val" id="vNonFactor">— —</div>
           </div>
         </div>
@@ -225,7 +225,7 @@
         <div class="hint" style="margin-bottom:12px">Pre-set per-patient annual treatment costs applied in the calculation.</div>
         <div class="ratio-row">
           <div class="ratio-box"><div class="lab">Factor (per patient / year)</div><div class="val">¥450,000</div></div>
-          <div class="ratio-box nf"><div class="lab">Non-Factor (per patient / year)</div><div class="val">¥150,000</div></div>
+          <div class="ratio-box nf"><div class="lab">Hympavzi (per patient / year)</div><div class="val">¥150,000</div></div>
         </div>
       </div>
 
@@ -238,7 +238,7 @@
     <!-- SCREEN 3 -->
     <div class="screen" id="s3">
       <div class="card">
-        <h2><span class="ic">3</span>Factor vs. Non-Factor — Hospital-Wide Total</h2>
+        <h2><span class="ic">3</span>Factor vs. Hympavzi — Hospital-Wide Total</h2>
         <div class="compare">
           <div class="col factor">
             <div class="lab">TOTAL FACTOR COST</div>
@@ -246,7 +246,7 @@
             <div class="sub" id="rSubFactor">0 patients</div>
           </div>
           <div class="col nonfactor">
-            <div class="lab">TOTAL NON-FACTOR COST</div>
+            <div class="lab">TOTAL HYMPAVZI COST</div>
             <div class="amt" id="rTotalNonFactor">¥0</div>
             <div class="sub" id="rSubNonFactor">0 patients</div>
           </div>
@@ -254,7 +254,7 @@
 
         <div class="bar-wrap">
           <div class="bar"><div class="seg" id="barF" style="width:50%;background:var(--factor)"></div><div class="seg" id="barN" style="width:50%;background:var(--nonfactor)"></div></div>
-          <div class="bar-legend"><span>Factor <b id="lpF">50%</b></span><span>Non-Factor <b id="lpN">50%</b></span></div>
+          <div class="bar-legend"><span>Factor <b id="lpF">50%</b></span><span>Hympavzi <b id="lpN">50%</b></span></div>
         </div>
       </div>
 
@@ -262,7 +262,7 @@
         <h2><span class="ic" style="background:var(--pfizer-dark)">=</span>Cost Breakdown (3 Tiers)</h2>
         <table class="breakdown">
           <thead>
-            <tr><th>Cost Breakdown</th><th class="hf">Factor</th><th class="hn">Non-Factor</th></tr>
+            <tr><th>Cost Breakdown</th><th class="hf">Factor</th><th class="hn">Hympavzi</th></tr>
           </thead>
           <tbody id="bdBody"></tbody>
         </table>
@@ -278,9 +278,9 @@
   </div>
 
   <div class="disclaimer">
-    This tool provides estimated figures for illustrative purposes only. Annual treatment costs are pre-set at ¥450,000/patient (factor) and ¥150,000/patient (non-factor); reimbursement rates are configured in the 70%–80% band with non-factor coverage set higher than factor. Actual costs and reimbursement vary by local medical insurance policy, hospital grade, drug catalog status, and individual patient circumstances. Not for clinical decision-making.
+    This tool provides estimated figures for illustrative purposes only. Annual treatment costs are pre-set at ¥450,000/patient (factor) and ¥150,000/patient (Hympavzi); reimbursement rates are configured in the 70%–80% band with Hympavzi coverage set higher than factor. Actual costs and reimbursement vary by local medical insurance policy, hospital grade, drug catalog status, and individual patient circumstances. Not for clinical decision-making.
   </div>
-  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.2 · Auto-cost + transposed breakdown</div></div>
+  <div class="footer"><div class="ver">Pfizer HCP Digital · Hemophilia Tools · EN v1.3 · Hympavzi (non-factor) branding</div></div>
 
 </div>
 
@@ -425,10 +425,10 @@ function compute(){
 
   $("summary").innerHTML=
     "Hospital-wide: <b>"+total+"</b> patients ("+hemA+" A + "+hemB+" B) &middot; "+
-    "Per-patient/yr: Factor ¥450,000 / Non-Factor ¥150,000 &middot; "+
+    "Per-patient/yr: Factor ¥450,000 / Hympavzi ¥150,000 &middot; "+
     "Coverage: "+state.factorRate+"% / "+state.nonFactorRate+"% &middot; "+
     "Patient out-of-pocket share: <b>"+(gAll?(gPat/gAll*100).toFixed(0):0)+"%</b> &middot; "+
-    "Non-factor saves patient <b>"+fmt(Math.max(save,0))+"</b> vs factor";
+    "Hympavzi saves patient <b>"+fmt(Math.max(save,0))+"</b> vs factor";
 }
 </script>
 </body>
